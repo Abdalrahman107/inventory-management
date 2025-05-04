@@ -43,37 +43,54 @@ const Expenses = () => {
     return date.toISOString().split("T")[0];
   };
 
-  const aggregatedData: AggregatedDataItem[] = useMemo(() => {
-    const filtered: AggregatedData = expenses
-      .filter((data: ExpenseByCategorySummary) => {
-        const matchesCategory =
-          selectedCategory === "All" || data.category === selectedCategory;
-        const dataDate = parseDate(data.date);
-        const matchesDate =
-          !startDate ||
-          !endDate ||
-          (dataDate >= startDate && dataDate <= endDate);
-        return matchesCategory && matchesDate;
-      })
-      .reduce((acc: AggregatedData, data: ExpenseByCategorySummary) => {
-        const amount = parseInt(data.amount);
-        if (!acc[data.category]) {
-          acc[data.category] = { name: data.category, amount: 0 };
-          acc[data.category].color = `#${Math.floor(
-            Math.random() * 16777215
-          ).toString(16)}`;
-          acc[data.category].amount += amount;
-        }
-        return acc;
-      }, {});
+  const filterExpenses = (
+    data: ExpenseByCategorySummary[],
+    category: string,
+    start: string,
+    end: string
+  ) => {
+    const parseDate = (dateString: string) =>
+      new Date(dateString).toISOString().split("T")[0];
+  
+    return data.filter((item) => {
+      const matchesCategory = category === "All" || item.category === category;
+      const dataDate = parseDate(item.date);
+      const matchesDate =
+        !start || !end || (dataDate >= start && dataDate <= end);
+      return matchesCategory && matchesDate;
+    });
+  };
 
-    return Object.values(filtered);
+  const aggregateExpensesByCategory = (
+    data: ExpenseByCategorySummary[]
+  ): AggregatedDataItem[] => {
+    const aggregated: AggregatedData = data.reduce((acc, item) => {
+      const amount = parseInt(item.amount, 10);
+      if (!acc[item.category]) {
+        acc[item.category] = {
+          name: item.category,
+          amount: 0,
+          color: `#${Math.floor(Math.random() * 16777215).toString(16)}`,
+        };
+      }
+      acc[item.category].amount += amount;
+      return acc;
+    }, {} as AggregatedData); 
+  
+    return Object.values(aggregated);
+  };
+
+
+  const aggregatedData: AggregatedDataItem[] = useMemo(() => {
+    const filtered = filterExpenses(expenses, selectedCategory, startDate, endDate);
+    return aggregateExpensesByCategory(filtered);
   }, [expenses, selectedCategory, startDate, endDate]);
+
 
   const classNames = {
     label: "block text-sm font-medium text-gray-700",
     selectInput:
-      "mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md",
+      "mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md bg-white",
   };
 
   if (isLoading) {
@@ -117,10 +134,10 @@ const Expenses = () => {
                 defaultValue="All"
                 onChange={(e) => setSelectedCategory(e.target.value)}
               >
-                <option>All</option>
-                <option>Office</option>
-                <option>Professional</option>
-                <option>Salaries</option>
+                <option className="bg-white">All</option>
+                <option className="bg-white">Office</option>
+                <option className="bg-white">Professional</option>
+                <option className="bg-white">Salaries</option>
               </select>
             </div>
             {/* START DATE */}

@@ -1,30 +1,31 @@
-import { useGetDashboardMetricsQuery } from "@/state/api";
-import { ShoppingBag } from "lucide-react";
+"use client";
 import React from "react";
+import { ShoppingBag } from "lucide-react";
+import { useGetDashboardMetricsQuery, useGetProductsQuery } from "@/state/api";
 import Rating from "../(components)/Rating";
+import SectionHeader from "./SectionHeader";
 import Image from "next/image";
 
-const CardPopularProducts = () => {
-  const { data: dashboardMetrics, isLoading } = useGetDashboardMetricsQuery();
+type Props = {};
+
+const PopularProducts = (props: Props) => {
+  const { data: DashboardMetrics, isLoading } = useGetDashboardMetricsQuery();
 
   return (
-    <div className="row-span-3 xl:row-span-6 bg-white shadow-md rounded-2xl pb-16">
+    <div className="bg-white col-span-1 md:row-span-3 xl:row-span-6 overflow-auto shadow rounded-xl py-2">
+      {/* header */}
+      <SectionHeader title={"Popular Products"} />
       {isLoading ? (
         <div className="m-5">Loading...</div>
       ) : (
-        <>
-          <h3 className="text-lg font-semibold px-7 pt-5 pb-2">
-            Popular Products
-          </h3>
-          <hr />
-          <div className="overflow-auto h-full">
-            {dashboardMetrics?.popularProducts.map((product) => (
-              <div
-                key={product.productId}
-                className="flex items-center justify-between gap-3 px-5 py-7 border-b"
-              >
-                <div className="flex items-center gap-3">
-                  <Image
+        DashboardMetrics?.popularProducts?.map((product) => {
+          return (
+            <div
+              key={product.productId}
+              className="px-4 py-6 border-b border-b-gray-200 flex items-center justify-between gap-5">
+              <div className="flex gap-3 items-center">
+                <div className="w-1/3">
+                    <Image
                     src={`https://s3-inventory710.s3.eu-west-2.amazonaws.com/product${
                       Math.floor(Math.random() * 3) + 1
                     }.png`}
@@ -32,34 +33,34 @@ const CardPopularProducts = () => {
                     width={48}
                     height={48}
                     className="rounded-lg w-14 h-14"
-                  />
-                  <div className="flex flex-col justify-between gap-1">
-                    <div className="font-bold text-gray-700">
-                      {product.name}
-                    </div>
-                    <div className="flex text-sm items-center">
-                      <span className="font-bold text-blue-500 text-xs">
-                        ${product.price}
-                      </span>
-                      <span className="mx-2">|</span>
-                      <Rating rating={product.rating || 0} />
-                    </div>
+                    />
+                </div>
+                <div className="flex flex-col w-2/3">
+                  <h4>{product.name}</h4>
+                  <div className="flex">
+                    <span>${product.price}</span>
+                    <span className="px-2">|</span>
+                    <Rating rating={product.rating} />
                   </div>
                 </div>
-
-                <div className="text-xs flex items-center">
-                  <button className="p-2 rounded-full bg-blue-100 text-blue-600 mr-2">
-                    <ShoppingBag className="w-4 h-4" />
-                  </button>
-                  {Math.round(product.stockQuantity / 1000)}k Sold
-                </div>
               </div>
-            ))}
-          </div>
-        </>
+              <div className="flex items-center gap-3">
+                <button
+                  className={`w-8 h-8 p-2 rounded-full flex justify-center items-center   cursor-pointer bg-blue-100`}>
+                  <ShoppingBag className="text-blue-600" />
+                </button>
+                <p>{Math.floor(product.stockQuantity / 1000)}k Sold</p>
+              </div>
+            </div>
+          );
+        })
       )}
     </div>
   );
 };
 
-export default CardPopularProducts;
+export default PopularProducts;
+
+
+
+

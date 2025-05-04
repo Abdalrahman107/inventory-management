@@ -1,90 +1,78 @@
-"use client"
 import { useAppDispatch, useAppSelector } from '@/app/redux'
 import { setIsSidebarCollapsed } from '@/state'
-import { Archive, CircleDollarSign, Clipboard, Layout, LucideIcon, Menu, SlidersHorizontal, User } from 'lucide-react'
+import { Menu, LucideIcon, CircleDollarSign, SlidersHorizontal, User, Clipboard, Archive, Layout } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import React from 'react'
 
-
-interface SidebarLinkProps{
-    href: string;
-    icon: LucideIcon;
-    label: string;
-    isCollapsed: boolean;
+interface sidebarProps  {
+  href: string;
+  icon:  LucideIcon;
+  label: string;
+  isCollapsed:boolean;
 }
 
-const SidebarLink = ({
-    href,
-    icon: Icon,
-    label,
-    isCollapsed
-}: SidebarLinkProps)=>{
-    const pathname = usePathname();
-    const isActive = pathname === href || (pathname === "/" && href === "/dashboard");
+const SidebarLink = ({icon: Icon, label, isCollapsed, href}:sidebarProps) =>{
 
-    return (
-        <Link href={href}>
-            <div className={`${isCollapsed?"justify-center py-4":"justify-start px-8 py-4"} cursor-pointer flex items-center hover:text-blue-500 hover:bg-blue-100 gap-3 transition-colors ${isActive?"bg-blue-200 text-white":""}`}>
-                <Icon className="w-6 h-6 text-gray-700"/>
+  const pathname = usePathname();
+  const isActive = pathname === href || (pathname === "/" && href === '/dashboard');
 
-                <span className={`${isCollapsed? "hidden":"block"} font-medium text-gray-700`}>
-                    {label}
-                </span>
-            </div>
-
-        </Link>
-    )
+  return(
+    <li className={`${isActive?"bg-blue-200":""} hover:bg-blue-100 transition-all duration-300`}>
+      <Link href={href} className={`flex items-center justify-start gap-x-4 py-4 px-7 `}>
+        <Icon/>
+        <h2 className={`${isCollapsed?"hidden opacity-0":"block opacity-100"} transition-all duration-300`}>{label}</h2>
+      </Link>
+    </li>
+  )
 }
-
-
 
 const Sidebar = () => {
-
-    const dispatsh = useAppDispatch();
-    const isSidebarCollapsed= useAppSelector((state)=> state.global.isSidebarCollapsed)
-
-    const toggleSidebar = () => {
-        dispatsh(setIsSidebarCollapsed(!isSidebarCollapsed));
-    }
-
-    const sidebarClassNames = `fixed flex flex-col ${isSidebarCollapsed? "w-0 md:w-16" : "w-72 md:w-64" } bg-white transition-all duration-300 overflow-hidden h-full shadow-md z-40`
+      
+      let isSidebarCollapsed = useAppSelector((state)=>state.global.isSidebarCollapsed);
+      const dispatch = useAppDispatch();
+      const toggleSidebar = () =>{
+        dispatch(setIsSidebarCollapsed(!isSidebarCollapsed));
+      }
+      // isSidebarCollapsed = false;
+  const sidebarClassNames = `fixed z-10 flex items-center flex-col bg-white gap-y-4 ${isSidebarCollapsed?"w-0 md:w-16":"w-64 "} h-full transition-all duration-300 overflow-hidden shadow`
 
   return (
     <div className={sidebarClassNames}>
-        {/* top logo */}
-        <div className={`flex gap-3 justify-between md:justify-normal items-center pt-8 ${isSidebarCollapsed?"px-5":"px-8"}`}>
-            <div>
+        <Link className={`flex items-center justify-between md:justify-start gap-x-3 pt-7 px-7 `} href='/'>
+          <div className='w-8 h-8 flex justify-center'>
                 <Image
-                          src="https://s3-inventory710.s3.eu-west-2.amazonaws.com/logo.png"
-                          alt="edstock-logo"
-                          width={27}
-                          height={27}
-                          className="rounded w-8"
-                />
-            </div>
-            <h1 className={`font-extrabold text-2xl ${isSidebarCollapsed?"hidden":"block"}`}>AASTOCK</h1>
-            <button className='md:hidden px-3 py-3 bg-gray-100 rounded-full
-             hover:bg-blue-100' onClick={toggleSidebar}>
-                <Menu className='w-4 h-4' />
-            </button>
-        </div>
-        {/* Links */}
-        <div className="flex-grow mt-8">
+                src="https://s3-inventory710.s3.eu-west-2.amazonaws.com/logo.png"
+                alt="AAstock-logo"
+                width={28}
+                height={28}
+                /> 
+          </div>
+          <h1 className={`${isSidebarCollapsed?"hidden opacity-0":"block opacity-100"} transition-all duration-300 text-2xl font-semibold`}>AASTOCK</h1>
+          <button onClick={toggleSidebar} className={`w-8 h-8 p-2 bg-gray-100 rounded-full justify-center items-center  ${isSidebarCollapsed?"hidden":"flex"} cursor-pointer md:hidden hover:bg-blue-100`}><Menu className='text-gray-600'/></button>
+        </Link>
+        <ul className={`flex flex-col ${isSidebarCollapsed?"":"w-full"}`}>
             <SidebarLink href='/dashboard' icon={Layout} label='Dashboard' isCollapsed={isSidebarCollapsed}/>
             <SidebarLink href='/inventory' icon={Archive} label='Inventory' isCollapsed={isSidebarCollapsed}/>
             <SidebarLink href='/products' icon={Clipboard} label='Products' isCollapsed={isSidebarCollapsed}/>
             <SidebarLink href='/users' icon={User} label='Users' isCollapsed={isSidebarCollapsed}/>
             <SidebarLink href='/settings' icon={SlidersHorizontal} label='Settings' isCollapsed={isSidebarCollapsed}/>
             <SidebarLink href='/expenses' icon={CircleDollarSign} label='Expenses' isCollapsed={isSidebarCollapsed}/>
-        </div>
-        {/* footer */}
-        <div className={`${isSidebarCollapsed?"hidden":"block"} mb-10`}>
-            <p className='text-center text-xs text-gray-500'>&copy; 2024 AASTOCK</p>
-        </div>
+        </ul>
+        <p className={`${isSidebarCollapsed?"hidden":"block"} mt-auto mb-7 text-xs text-gray-500 `}>© 2024 AASTOCK</p>
     </div>
   )
 }
 
 export default Sidebar
+
+
+
+
+
+
+
+
+
+

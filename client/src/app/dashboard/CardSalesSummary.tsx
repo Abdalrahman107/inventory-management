@@ -1,6 +1,6 @@
-import { useGetDashboardMetricsQuery } from "@/state/api";
-import { TrendingUp } from "lucide-react";
 import React, { useState } from "react";
+import SectionHeader from "./SectionHeader";
+import { TrendingUp } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -10,20 +10,21 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { useGetDashboardMetricsQuery } from "@/state/api";
 
-const CardSalesSummary = () => {
+const SalesSummary = () => {
   const { data, isLoading, isError } = useGetDashboardMetricsQuery();
   const salesData = data?.salesSummary || [];
 
   const [timeframe, setTimeframe] = useState("weekly");
+  const totalValueSum = salesData.reduce(
+    (acc, curr) => acc + curr.totalValue,
+    0
+  );
 
-  const totalValueSum =
-    salesData.reduce((acc, curr) => acc + curr.totalValue, 0) || 0;
-
-  const averageChangePercentage =
-    salesData.reduce((acc, curr, _, array) => {
-      return acc + curr.changePercentage! / array.length;
-    }, 0) || 0;
+  const averageChangePercentage = salesData.reduce((acc, curr, _, array) => {
+    return acc + (curr.changePercentage ?? 0) / array.length;
+  }, 0);
 
   const highestValueData = salesData.reduce((acc, curr) => {
     return acc.totalValue > curr.totalValue ? acc : curr;
@@ -42,55 +43,61 @@ const CardSalesSummary = () => {
   }
 
   return (
-    <div className="row-span-3 xl:row-span-6 bg-white shadow-md rounded-2xl flex flex-col justify-between">
+    <div className="bg-white col-span-1 md:row-span-3 xl:row-span-6 overflow-auto shadow rounded-xl py-2 flex flex-col justify-between">
+      {/* header */}
+      <SectionHeader title={"Sales Summary"} />
       {isLoading ? (
         <div className="m-5">Loading...</div>
       ) : (
         <>
-          {/* HEADER */}
-          <div>
-            <h2 className="text-lg font-semibold mb-2 px-7 pt-5">
-              Sales Summary
-            </h2>
-            <hr />
-          </div>
-
-          {/* BODY */}
-          <div className="overflow-auto">
-            {/* BODY HEADER */}
-            <div className="flex justify-between items-center mb-6 px-7 mt-5">
-              <div className="text-lg font-medium">
-                <p className="text-xs text-gray-400">Value</p>
-                <span className="text-2xl font-extrabold">
-                  $
-                  {(totalValueSum / 1000000).toLocaleString("en", {
-                    maximumFractionDigits: 2,
-                  })}
-                  m
-                </span>
-                <span className="text-green-500 text-sm ml-2">
-                  <TrendingUp className="inline w-4 h-4 mr-1" />
-                  {averageChangePercentage.toFixed(2)}%
-                </span>
+          <div className="overflow-auto h-auto">
+            {/* body header */}
+            <div className="flex justify-between items-center gap-5 px-3 py-4">
+              <div className="flex flex-col">
+                <p className="text-gray-500">value</p>
+                <div className="flex items-center gap-4">
+                  <p className="text-lg font-bold">
+                    $
+                    {(totalValueSum / 1000000).toLocaleString("en", {
+                      maximumFractionDigits: 2,
+                    })}
+                    m
+                  </p>
+                  <div
+                    className={`text-xs text-green-400 flex items-center gap-1`}>
+                    <TrendingUp className="w-4 h-4" />
+                    <p>{averageChangePercentage.toFixed(2)}%</p>
+                  </div>
+                </div>
               </div>
-              <select
-                className="shadow-sm border border-gray-300 bg-white p-2 rounded"
-                value={timeframe}
-                onChange={(e) => {
-                  setTimeframe(e.target.value);
-                }}
-              >
-                <option value="daily">Daily</option>
-                <option value="weekly">Weekly</option>
-                <option value="monthly">Monthly</option>
-              </select>
+              <div className="border border-gray-200 shadow text-center">
+                <select
+                  className="px-2 py-1.5"
+                  value={timeframe}
+                  onChange={(e) => {
+                    setTimeframe(e.target.value);
+                  }}>
+                  <option className="w-full focus:outline-none" value="Daily">
+                    Daily
+                  </option>
+                  <option className="w-full focus:outline-none" value="Weekly">
+                    Weekly
+                  </option>
+                  <option className="w-full focus:outline-none" value="Monthly">
+                    Monthly
+                  </option>
+                </select>
+              </div>
             </div>
-            {/* CHART */}
-            <ResponsiveContainer width="100%" height={350} className="px-7">
+
+            {/* Chart */}
+            <ResponsiveContainer
+              width="100%"
+              height={350}
+              className="px-4 py-4 my-auto">
               <BarChart
                 data={salesData}
-                margin={{ top: 0, right: 0, left: -25, bottom: 0 }}
-              >
+                margin={{ top: 0, right: 0, left: -25, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="" vertical={false} />
                 <XAxis
                   dataKey="date"
@@ -129,17 +136,13 @@ const CardSalesSummary = () => {
               </BarChart>
             </ResponsiveContainer>
           </div>
-
-          {/* FOOTER */}
-          <div>
-            <hr />
-            <div className="flex justify-between items-center mt-6 text-sm px-7 mb-4">
-              <p>{salesData.length || 0} days</p>
-              <p className="text-sm">
-                Highest Sales Date:{" "}
-                <span className="font-bold">{highestValueDate}</span>
-              </p>
-            </div>
+          {/* Footer */}
+          <div className="flex items-center justify-between gap-5 px-3 py-4 border-t border-t-gray-200 text-sm mt-auto">
+            <p>5 days</p>
+            <p>
+              Highest Sales Date:{" "}
+              <span className="font-bold">{highestValueDate}</span>
+            </p>
           </div>
         </>
       )}
@@ -147,4 +150,4 @@ const CardSalesSummary = () => {
   );
 };
 
-export default CardSalesSummary;
+export default SalesSummary;

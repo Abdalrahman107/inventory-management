@@ -1,79 +1,89 @@
-'use client'
-import { useAppDispatch, useAppSelector } from "@/app/redux"
-import { setIsDarkMode, setIsSidebarCollapsed } from "@/state"
-import { Bell, LucideIcon, Menu, Moon, Settings, Sun } from "lucide-react"
-import Image from "next/image"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import React from "react"
+import { useAppDispatch, useAppSelector } from '@/app/redux'
+import { setIsDarkMode, setIsSidebarCollapsed } from '@/state'
+import { Bell, Menu, Moon, Settings, Sun } from 'lucide-react'
+import Image from 'next/image'
+import Link from 'next/link'
+import React from 'react'
 
 
 const Navbar = () => {
 
-    const dispatsh = useAppDispatch();
-    const isSidebarCollapsed= useAppSelector((state)=> state.global.isSidebarCollapsed)
-    const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
+  let isDarkMode = useAppSelector((state)=> state.global.isDarkMode)
+  let isSidebarCollapsed = useAppSelector((state)=> state.global.isSidebarCollapsed)
+  
+  // isDarkMode = true;
 
-    const toggleSidebar = () => {
-        dispatsh(setIsSidebarCollapsed(!isSidebarCollapsed));
-    }
+  const dispatch = useAppDispatch();
+  const toggleSidebar = ()=>{
+    dispatch(setIsSidebarCollapsed(!isSidebarCollapsed))
+  }
 
-    const toggleDarkMode = ()=>{
-        dispatsh(setIsDarkMode(!isDarkMode))
-    }
+  const toggleDarkMode = ()=>{
+    dispatch(setIsDarkMode(!isDarkMode));
+  }
 
   return (
-    <div className="flex justify-between items-center w-full mb-7">
-        {/* left side */}
-        <div className="flex justify-between items-center gap-5">
-            <button className="px-3 py-3 bg-gray-100 rounded-full hover:bg-blue-100" onClick={toggleSidebar}>
-                <Menu className="w-4 h-4"/>
-            </button>
-        
-        <div className="relative">
-            <input type="search" placeholder="Start type to search groups & products" className="pl-10 pr-4 py-2 w-full lg:w-80 border-2 border-gray-300 bg-white rounded-lg focus:outline-none focus:border-blue-500"/>
+    <div className='flex w-full justify-between items-center mb-6 gap-5'>
+      {/* left side */}
+      
+      <div className='flex justify-between items-center gap-3'>
+        {/* menu icon */}
+      <button onClick={toggleSidebar} className={`w-8 h-8 p-2 bg-gray-100 rounded-full justify-center items-center flex cursor-pointer hover:bg-blue-100`}><Menu className='text-gray-600'/></button>
+      {/* search input */}
+      <div className='relative'>
+        <input type="search" placeholder='search groups & products' className=' focus:outline-none border-2 border-gray-300 rounded-lg focus:border-2 focus:border-blue-400 py-1.5 pl-8 pr-3 transition-colors duration-300 w-full md:min-w-60'/>
+        <div className='absolute left-0 top-1/4 pl-2'>
+        <Bell className='text-gray-500 w-5 h-5'/>
+        </div>
+      </div>
+      </div>
 
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Bell className="text-gray-500" size={20}/>
-            </div>
+      {/* right side */}
+      <div className='flex justify-between items-center gap-5'>
+        <div className='flex justify-between items-center gap-5'>
+          <button onClick={toggleDarkMode} className='cursor-pointer'>{!isDarkMode?<Moon className='text-gray-500'/>:<Sun className='text-gray-500'/>}</button>
+          <button className='relative hidden md:block'>
+            <Bell className='text-gray-500'/>
+            <div className='absolute bg-red-400 p-1 w-5 h-5 -top-1/3 -right-1/4 rounded-full text-white flex justify-center items-center'><p>3</p></div>
+          </button>
+          <span className='hidden md:block text-gray-500'>|</span>
+          <div className='hidden md:block w-9 h-9'>
+            <Image
+            src="https://s3-inventory710.s3.eu-west-2.amazonaws.com/profile.jpg"
+            alt="Profile"
+            width={50}
+            height={50}
+            className="rounded-full h-full object-cover"
+            />
+          </div>
+          <h2 className='hidden md:block '>Abdalragman</h2>
         </div>
-        </div>
-        {/* right side */}
-        <div className="flex justify-between items-center gap-5">
-            <div className="hidden md:flex justify-between items-center gap-5">
-                <div>
-                    <button onClick={toggleDarkMode}>
-                        {isDarkMode?<Sun className=" cursor-pointer text-gray-500 ml-2" size={24}/>:<Moon className=" cursor-pointer text-gray-500 ml-2" size={24}/>}
-                        
-                    </button>
-                </div>
-                <div className="relative">
-                    <Bell className="cursor-pointer text-gray-500" size={24}/>
-                    <span className="absolute -top-2 -right-2 inline-flex justify-center items-center px-[0.4rem] py-1 text-xs font-semibold leading-none text-red-100 bg-red-400 rounded-full">
-                        3
-                    </span>
-                </div>
-                <hr className="w-0 h-7 border border-solid border-l border-gray-300 mx-3"/>
-                <div className="flex items-center gap-3 cursor-pointer">
-                    <div className="w-9 h-9">
-                    <Image
-                        src="https://s3-inventory710.s3.eu-west-2.amazonaws.com/profile.jpg"
-                        alt="Profile"
-                        width={50}
-                        height={50}
-                        className="rounded-full h-full object-cover"
-                    />
-                    </div>
-                    <span className="font-semibold">Abdalrahman</span>
-                </div>
-            </div>
-            <Link href="/settings"> 
-             <Settings className="cursor-pointer text-gray-500" size={24}/>
-            </Link>
-        </div>
+      <Link href="/settings">
+        <Settings className='text-gray-500'/>
+      </Link>
+      </div>
+
 
     </div>
   )
 }
 
 export default Navbar
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

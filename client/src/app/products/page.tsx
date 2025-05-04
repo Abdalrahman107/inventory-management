@@ -1,12 +1,12 @@
 "use client";
-
 import { useCreateProductMutation, useGetProductsQuery } from "@/state/api";
 import { PlusCircleIcon, SearchIcon } from "lucide-react";
 import { useState } from "react";
 import Header from "@/app/(components)/Header";
-import Rating from "@/app/(components)/Rating";
+import Rating from "../(components)/Rating";
 import CreateProductModal from "./CreateProductModal";
 import Image from "next/image";
+import toast from "react-hot-toast";
 
 type ProductFormData = {
   name: string;
@@ -27,7 +27,14 @@ const Products = () => {
 
   const [createProduct] = useCreateProductMutation();
   const handleCreateProduct = async (productData: ProductFormData) => {
-    await createProduct(productData);
+    const { data:res } = await createProduct(productData);
+    if(res){
+      toast.success('Success: product created')
+    }else{
+      toast.error("Error creating product!")
+    }
+    
+    
   };
 
   if (isLoading) {
@@ -81,13 +88,13 @@ const Products = () => {
             >
               <div className="flex flex-col items-center">
                 <Image
-                  src={`https://s3-inventory710.s3.eu-west-2.amazonaws.com/product${
-                    Math.floor(Math.random() * 3) + 1
-                  }.png`}
-                  alt={product.name}
-                  width={150}
-                  height={150}
-                  className="mb-3 rounded-2xl w-36 h-36"
+                src={`https://s3-inventory710.s3.eu-west-2.amazonaws.com/product${
+                  Math.floor(Math.random() * 3) + 1
+                }.png`}
+                alt={product.name}
+                width={150}
+                height={150}
+                className="mb-3 rounded-2xl w-36 h-36"
                 />
                 <h3 className="text-lg text-gray-900 font-semibold">
                   {product.name}
@@ -118,3 +125,26 @@ const Products = () => {
 };
 
 export default Products;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

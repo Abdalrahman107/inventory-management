@@ -1,18 +1,24 @@
-import { Star } from "lucide-react";
-import React from "react";
+import { Star } from 'lucide-react'
+import React from 'react'
 
-type RatingProps = {
-  rating: number;
-};
+interface Props { rating : number | undefined;}
 
-const Rating = ({ rating }: RatingProps) => {
-  return [1, 2, 3, 4, 5].map((index) => (
-    <Star
-      key={index}
-      color={index <= rating ? "#FFC107" : "#E4E5E9"}
-      className="w-4 h-4"
-    />
-  ));
-};
+const Rating = ( { rating } : Props ) => {
+  
+  
+  const starsNum = Math.floor(rating ?? 0);
+  
+  const allStars = [1,2,3,4,5]
+  return (
+    <div  className='flex items-center'>
+      {allStars.map((starIndex)=>{
+        return (
+            <Star key={starIndex} className={`w-4 ${starsNum<starIndex?"text-gray-300":"text-yellow-300"}`}/>
+        )
+      })}
 
-export default Rating;
+    </div>
+  )
+}
+
+export default Rating

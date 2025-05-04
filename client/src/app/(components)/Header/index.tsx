@@ -7,3 +7,4 @@ const Header = ({ name }: HeaderProps) => {
 };
 
 export default Header;
+

@@ -3,14 +3,16 @@
 import { useGetUsersQuery } from "@/state/api";
 import Header from "@/app/(components)/Header";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { useAppSelector } from "../redux";
 
 const columns: GridColDef[] = [
-  { field: "userId", headerName: "ID", width: 90 },
-  { field: "name", headerName: "Name", width: 200 },
-  { field: "email", headerName: "Email", width: 200 },
+  { field: "userId", headerName: "ID", flex: 2, align:"left", headerAlign:"left" },
+  { field: "name", headerName: "Name", flex: 2, align:"left", headerAlign:"left" },
+  { field: "email", headerName: "Email", flex: 4, align:"left", headerAlign:"left" },
 ];
 
 const Users = () => {
+  let isDarkMode = useAppSelector((state)=> state.global.isDarkMode)
   const { data: users, isError, isLoading } = useGetUsersQuery();
 
   if (isLoading) {
@@ -31,8 +33,8 @@ const Users = () => {
         columns={columns}
         getRowId={(row) => row.userId}
         checkboxSelection
-        className="shadow rounded-lg border border-gray-200 mt-5 !text-grey-700"
-        getRowClassName={() => "bg-slate-200 hover:!bg-slate-300"}
+        className={`shadow rounded-lg border border-gray-200  ${isDarkMode?"!text-gray-800":""}`}
+        getRowClassName={() => `${isDarkMode?"bg-gray-100 hover:!bg-gray-200":""}    focus:!bg-transparent `}
       />
     </div>
   );
